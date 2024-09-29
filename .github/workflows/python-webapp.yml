@@ -33,6 +33,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Lint with flake8
+      if: github.event_name == 'push'
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -44,8 +45,8 @@ jobs:
     #    pytest tests/
 
     - name: Analysing the code with pylint
-      run: |
-        pylint --fail-under=8 $(git ls-files '*.py')
+      if: github.event_name == 'push'
+      run: pylint --fail-under=8 $(git ls-files '*.py')
 
   build:
     runs-on: ubuntu-latest
@@ -55,6 +56,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/setup@v0.4.0
+      
+   - name: Scan Dockerfile with Snyk
+        run: snyk container test --all-projects --fail-on=all --threshold=critical
+
     - name: Build Image
       id: build_image
       uses: redhat-actions/buildah-build@v2
@@ -62,6 +69,22 @@ jobs:
         image: weather-webapp
         tags: latest ${{ github.sha }}
         containerfiles: Dockerfile
+
+    - name: Check for vulnerabilities
+      run: snyk test --all-projects --fail-on=all --threshold=critical
+      
+    - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.6.0
+        
+    - name: Sign the Image
+      run: |
+        echo "${{ secrets.COSIGN_KEY }}" > cosign.key
+        cosign sign --key cosign.key weather-webapp:latest
+
+    - name: Verify the Image
+      run: |
+        echo "${{ secrets.COSIGN_PUBLIC_KEY }}" > cosign.pub
+        cosign verify --key cosign.pub weather-webapp:latest
 
     - name: Push To GHCR
       uses: redhat-actions/push-to-registry@v2
