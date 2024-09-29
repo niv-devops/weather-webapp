@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h2 {
+            color: #39ff14;
+            text-shadow: 0 0 10px #39ff14;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: #1c1c1c;
+            border: none;
+            border-radius: 15px;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.7);
+        }
+
+        .card-header {
+            background-color: #333;
+            color: #39ff14;
+            border-bottom: 1px solid #444;
+            text-shadow: 0 0 10px #39ff14;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #39ff14;
+            border-color: #39ff14;
+            color: black;
+            text-shadow: 0 0 5px #39ff14;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            border-radius: 25px;
+        }
+
+        .btn-primary:hover {
+            background-color: #33cc13;
+            border-color: #33cc13;
+            box-shadow: 0 0 10px #39ff14;
+        }
+
+        .fa-icon {
+            font-size: 20px;
+            margin-right: 5px;
+            color: #39ff14;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .text-center button {
+            margin: 20px;
+        }
+
+        .text-center button i {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mb-4">Weather Forecast for: {{ location }}</h2>
+        <div class="row">
+            {% for forecast in forecasts %}
+            {% if loop.index <= 3 %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-calendar-day fa-icon"></i> {{ forecast.date }}
+                    </div>
+                    <div class="card-body">
+                        <p><i class="fas fa-sun fa-icon"></i> Day Temperature: {{ forecast.avg_day_temp | round(2) }} °C</p>
+                        <p><i class="fas fa-moon fa-icon"></i> Night Temperature: {{ forecast.avg_night_temp | round(2) }} °C</p>
+                        <p><i class="fas fa-tint fa-icon"></i> Humidity: {{ forecast.avg_daily_humidity | round(2) }} %</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="row">
+            {% for forecast in forecasts %}
+            {% if loop.index > 3 %}
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-calendar-day fa-icon"></i> {{ forecast.date }}
+                    </div>
+                    <div class="card-body">
+                        <p><i class="fas fa-sun fa-icon"></i> Day: {{ forecast.avg_day_temp | round(2) }} °C</p>
+                        <p><i class="fas fa-moon fa-icon"></i> Night: {{ forecast.avg_night_temp | round(2) }} °C</p>
+                        <p><i class="fas fa-tint fa-icon"></i> Humidity: {{ forecast.avg_daily_humidity | round(2) }} %</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="chart-container mt-4">
+            <canvas id="line-chart" width="800" height="400"></canvas>
+        </div>
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="home_btn()">Change Location</button>
+            <button class="btn btn-primary" onclick="downloadImage()">Download Sky's Image</button>
+            <button class="btn btn-primary" onclick="saveData(event)">Save Data</button>
+            <form id="save-data-form">
+                <input type="hidden" name="location" value="{{ location }}">
+                <input type="hidden" name="date" value="{{ forecasts[0].date }}">
+                <input type="hidden" name="forecast_data" value='{{ forecasts | tojson | safe }}'>
+           </form>
+        </div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        function home_btn() {
+            window.location.href = "/";
+        }
+        
+        function downloadImage() {
+            window.location.href = "/download";
+        }
+
+        function saveData(event) {
+            event.preventDefault();
+
+            const form = document.getElementById('save-data-form');
+            const formData = new FormData(form);
+
+            fetch('/database', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else {
+                    alert("Failed to save data.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while saving data.");
+            });
+        }
+
+        var labels = [];
+        var dayTemperatures = [];
+        var nightTemperatures = [];
+        var humidities = [];
+
+        {% for forecast in forecasts %}
+        labels.push("{{ forecast.date }}");
+        dayTemperatures.push(parseFloat("{{ forecast.avg_day_temp }}").toFixed(2));
+        nightTemperatures.push(parseFloat("{{ forecast.avg_night_temp }}").toFixed(2));
+        humidities.push(parseFloat("{{ forecast.avg_daily_humidity }}").toFixed(2));
+        {% endfor %}
+
+        var ctx = document.getElementById('line-chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Day Temperature',
+                    borderColor: '#39ff14',
+                    backgroundColor: 'rgba(57, 255, 20, 0.2)',
+                    data: dayTemperatures,
+                    fill: true,
+                }, {
+                    label: 'Night Temperature',
+                    borderColor: '#FC2947',
+                    backgroundColor: 'rgba(252, 41, 71, 0.2)',
+                    data: nightTemperatures,
+                    fill: true,
+                }, {
+                    label: 'Humidity',
+                    borderColor: '#BB86FC',
+                    backgroundColor: 'rgba(187, 134, 252, 0.2)',
+                    data: humidities,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Day'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        },
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return value.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

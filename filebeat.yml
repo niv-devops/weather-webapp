@@ -1,0 +1,13 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - "record.log"
+
+output.elasticsearch:
+  hosts: ["http://18.185.80.6:9200"]
+  username: "elastic"
+  password: "elasticgoofy"
+
+setup.kibana:
+  host: "18.185.80.6:5601"

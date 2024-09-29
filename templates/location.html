@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather WebApp</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            padding: 20px;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        h1, p {
+            color: #39ff14;
+            text-shadow: 0 0 10px #39ff14;
+        }
+
+        h3 {
+            color: #ff00ff;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #1c1c1c;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.7);
+            border: 1px solid #39ff14;
+        }
+
+        .form-container input[type="text"] {
+            padding: 12px;
+            margin-right: 10px;
+            border: 1px solid #333;
+            background-color: #222;
+            color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+        }
+
+        .form-container .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            display: inline-block;
+            margin: 5px;
+            text-shadow: 0 0 5px #ffffff;
+        }
+
+        .form-container .btn-primary {
+            background-color: #39ff14;
+            color: black;
+            border: 1px solid #39ff14;
+        }
+
+        .form-container .btn-primary:hover {
+            background-color: #33cc13;
+            box-shadow: 0 0 10px #39ff14;
+        }
+
+        .btn-custom {
+            background-color: #39ff14;
+            color: #000000;
+            text-shadow: 0 0 5px #39ff14;
+        }
+
+        .btn-custom:hover {
+            background-color: #33cc13;
+            box-shadow: 0 0 10px #39ff14;
+        }
+
+        .icon {
+            font-size: 24px;
+            margin-right: 5px;
+        }
+
+        .location-error {
+            font-size: 18px;
+            color: #ff00ff;
+            text-align: center;
+            margin-top: 20px;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .image-container img {
+            width: 400px;
+            height: auto;
+            border-radius: 50%;
+            border: 2px solid #39ff14;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-container">
+                    <h1 class="text-center mb-4"><i>What is Zeus preparing for us this week?</i></h1>
+                    <form method="GET" action="#">
+                        <div class="form-group">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-city icon"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="location" placeholder="Enter City or Country" required>
+                            </div>
+                        </div>
+                        <div class="form-group text-center">
+                            <input type="submit" class="btn btn-primary" value="See Forecast">
+                            <a href="{{ url_for('static_web') }}" class="btn btn-custom">I'm feeling lucky</a>
+                        </div>
+                    </form>
+                    {% if locationError %}
+                    <div class="location-error">{{ locationError }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="image-container">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/001/330/664/small_2x/thunder-zeus-god-artwork-vector.jpg" alt="Decorative Image">
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+</body>
+</html>
+

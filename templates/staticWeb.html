@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #39ff14;
+            text-shadow: 0 0 10px #39ff14;
+            margin: 20px 0;
+        }
+        p {
+            font-size: 18px;
+            color: #f1f1f1;
+            margin: 10px 0;
+        }
+        a {
+            color: #00bfff;
+            text-decoration: none;
+            border-bottom: 1px solid #00bfff;
+        }
+        a:hover {
+            color: #00ffff;
+            border-bottom: 1px solid #00ffff;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .image-container img {
+            width: 280px;
+            height: 280px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #000000;
+            text-shadow: 0 0 10px #39ff14;
+            background-color: #39ff14;
+            border: none;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dionysus</h1>
+        <p>The god of wine-making, orchards and fruit, vegetation, fertility, festivity, insanity, and theatre.</p>
+        <div class="image-container">
+            <img src="https://static.wixstatic.com/media/af1176_49ab3bc07ed545ee8834755c7ce1026a~mv2.jpg/v1/fill/w_280,h_280,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/IMG_5879_JPG.jpg" alt="Img">
+        </div>
+        <div>
+            <button class="btn" onclick="home_btn()"> Go big or go home</button>
+        </div>
+    </div>
+    <script>
+        function home_btn() {
+            window.location.href = "/";
+        }
+    </script>
+</body>
+</html>
+
