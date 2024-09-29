@@ -162,7 +162,7 @@ def health_check():
 @app.route('/download', methods=['GET'])
 def get_image():
     """ Download sky's image from AWS S3 bucket """
-    s3 = client('s3', aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'), 
+    s3 = boto3.client('s3', aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'), 
                       aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
     file = s3.get_object(Bucket='tasty-kfc-bucket', Key='sky.jpg')
     return Response(
