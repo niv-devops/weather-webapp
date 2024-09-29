@@ -1,4 +1,5 @@
 FROM python:3.11-slim
+LABEL org.opencontainers.image.source = "https://github.com/niv-devops/weather-webapp"
 WORKDIR /webapp
 COPY requirements.txt .
 RUN pip install -r requirements.txt
