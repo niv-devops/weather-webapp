@@ -20,7 +20,7 @@ jobs:
         python-version: "3.12"
 
     - name: Run Gitleaks
-      uses: gitleaks/gitleaks-action@v8.19.0
+      uses: gitleaks/gitleaks@v8.19.3
       env:
         GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
 
