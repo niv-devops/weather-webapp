@@ -50,7 +50,6 @@ jobs:
         image: weather-webapp
         tags: latest ${{ github.sha }}
         containerfiles: ./Dockerfile
-        context: .
 
     - name: Push To GHCR
       uses: redhat-actions/push-to-registry@v2
