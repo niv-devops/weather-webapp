@@ -1,4 +1,4 @@
-name: Python weather webapp
+name: Python weather webapp #ok
 
 on:
   push:
