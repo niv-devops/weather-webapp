@@ -43,13 +43,16 @@ jobs:
     needs: test
 
     steps:
+    - name: Checkout Code
+        uses: actions/checkout@v4
+        
     - name: Build Image
       id: build_image
       uses: redhat-actions/buildah-build@v2
       with:
         image: weather-webapp
         tags: latest ${{ github.sha }}
-        containerfiles: ./Dockerfile
+        containerfiles: Dockerfile
 
     - name: Push To GHCR
       uses: redhat-actions/push-to-registry@v2
