@@ -21,8 +21,8 @@ jobs:
 
     - name: Run Gitleaks
       uses: gitleaks/gitleaks-action@v8.19.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
 
     - name: Install dependencies
       run: |
