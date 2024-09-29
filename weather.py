@@ -8,21 +8,20 @@ Install dependency: pip install --break-system-packages --user <dependency>
 """
 
 from datetime import datetime, timedelta
-from flask import Flask, render_template, request, abort, Response, jsonify
+import json
+import logging
+import os
+from decimal import Decimal
+import boto3
+from flask import Flask, render_template, request, Response, jsonify
 from geopy.geocoders import Nominatim
+from prometheus_client import Counter, generate_latest
+from prometheus_flask_exporter import PrometheusMetrics
 import openmeteo_requests
 import requests_cache
 from retry_requests import retry
-from day import forecast
-import boto3
-from boto3 import client
-import json
-import os
-from decimal import Decimal
-from prometheus_flask_exporter import PrometheusMetrics
-from prometheus_client import Counter, generate_latest
-import logging
 import ecs_logging
+from day import forecast
 
 app = Flask(__name__)
 
@@ -71,13 +70,13 @@ def process_hourly_data(response):
     hourly_is_day = hourly.Variables(2).ValuesAsNumpy()
 
     forecasts = []
-    
+
     for day in range(7):
         count_is_day = 0
         day_temp_sum = 0
         night_temp_sum = 0
         day_humidity_sum = 0
-        
+
         for hour in range(24):
             index = day * 24 + hour
             temperature = hourly_temperature_2m[index]
@@ -91,11 +90,11 @@ def process_hourly_data(response):
                 night_temp_sum += temperature
 
             day_humidity_sum += humidity
-        
+
         avg_day_temp = day_temp_sum / count_is_day if count_is_day > 0 else -99999
         avg_night_temp = night_temp_sum / (24 - count_is_day) if (24 - count_is_day) > 0 else -99999
         avg_daily_humidity = day_humidity_sum / 24
-        
+
         date_obj = datetime.today().date() + timedelta(days=day)
         forecast_instance = {
             "date": str(date_obj),
@@ -104,7 +103,7 @@ def process_hourly_data(response):
             "avg_daily_humidity": float(avg_daily_humidity)
         }
         forecasts.append(forecast_instance)
-    
+
     return forecasts
 
 def convert_to_decimal(data):
@@ -115,8 +114,7 @@ def convert_to_decimal(data):
         return [convert_to_decimal(i) for i in data]
     elif isinstance(data, float):
         return Decimal(str(data))
-    else:
-        return data
+    return data
 
 @app.route('/', methods=['GET'])
 def get_weather():
@@ -160,7 +158,7 @@ def static_web():
 def health_check():
     """ Check web connectivity """
     return 'Healthy', 200
-    
+
 @app.route('/download', methods=['GET'])
 def get_image():
     """ Download sky's image from AWS S3 bucket """
