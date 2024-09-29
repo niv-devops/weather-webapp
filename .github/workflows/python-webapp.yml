@@ -43,9 +43,9 @@ jobs:
     needs: test
 
     steps:
-    - name: Checkout Code
+    - name: Checkout repository
         uses: actions/checkout@v4
-        
+
     - name: Build Image
       id: build_image
       uses: redhat-actions/buildah-build@v2
