@@ -59,8 +59,8 @@ jobs:
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions/setup@v0.4.0
       
-   - name: Scan Dockerfile with Snyk
-        run: snyk container test --all-projects --fail-on=all --threshold=critical
+    - name: Scan Dockerfile with Snyk
+      run: snyk container test --all-projects --fail-on=all --threshold=critical
 
     - name: Build Image
       id: build_image
@@ -74,7 +74,7 @@ jobs:
       run: snyk test --all-projects --fail-on=all --threshold=critical
       
     - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.6.0
+      uses: sigstore/cosign-installer@v3.6.0
         
     - name: Sign the Image
       run: |
