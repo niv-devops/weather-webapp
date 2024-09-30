@@ -89,7 +89,7 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        image:  ghcr.io/${{ github.repository }}/weather-webapp:latest
+        image:  ghcr.io/${{ github.repository_owner }}/weather-webapp:latest
         args: --threshold=critical
       
     - name: Install Cosign
