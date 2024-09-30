@@ -45,11 +45,11 @@ jobs:
       run: pylint --fail-under=8 $(git ls-files '*.py')
 
     - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/python@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=critical
+      uses: snyk/actions/python@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=critical
       
     #- name: Set up Node.js
      # uses: actions/setup-node@v4.0.4
