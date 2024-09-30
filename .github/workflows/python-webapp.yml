@@ -67,7 +67,7 @@ jobs:
     - name: Run Snyk to check for vulnerabilities in project
       run: |
         snyk auth ${{ secrets.SNYK_TOKEN }}
-        snyk test --all-projects --fail-on=all --threshold=critical
+        snyk test --all-projects --file=Dockerfile --fail-on=all --threshold=critical
 
     - name: Build Image
       id: build_image
