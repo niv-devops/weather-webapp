@@ -58,6 +58,8 @@ jobs:
 
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       
     - name: Scan Dockerfile with Snyk
       run: snyk container test --all-projects --fail-on=all --threshold=critical
