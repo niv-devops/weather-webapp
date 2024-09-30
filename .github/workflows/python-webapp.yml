@@ -81,7 +81,7 @@ jobs:
       uses: redhat-actions/buildah-build@v2
       with:
         image: weather-webapp
-        tags: latest, ${{ github.sha }}
+        tags: latest ${{ github.sha }}
         containerfiles: Dockerfile
 
     - name: Run Snyk to check for vulnerabilities in container
@@ -89,7 +89,7 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        image: weather-webapp:latest
+        image: weather-webapp
         args: --threshold=critical
       
     - name: Install Cosign
