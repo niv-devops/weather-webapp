@@ -62,7 +62,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       
     - name: Scan Dockerfile with Snyk
-      run: snyk container test --all-projects --fail-on=all --threshold=critical
+      run: snyk container test --file=Dockerfile --fail-on=all --threshold=critical
 
     - name: Build Image
       id: build_image
@@ -73,7 +73,7 @@ jobs:
         containerfiles: Dockerfile
 
     - name: Check for vulnerabilities
-      run: snyk test --all-projects --fail-on=all --threshold=critical
+      run: snyk container test weather-webapp:latest ${{ github.sha }} --fail-on=all --threshold=critical
       
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.6.0
