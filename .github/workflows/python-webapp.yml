@@ -56,13 +56,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/docker@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      
-    - name: Scan Dockerfile with Snyk
-      run: snyk container test --file=Dockerfile --fail-on=all --threshold=critical
+    - name: Run Snyk to check for vulnerabilities in image
+      run: |
+        snyk auth ${{ secrets.SNYK_TOKEN }}
+        snyk container test --file=Dockerfile --fail-on=all --threshold=critical
 
     - name: Build Image
       id: build_image
@@ -72,8 +69,13 @@ jobs:
         tags: latest ${{ github.sha }}
         containerfiles: Dockerfile
 
-    - name: Check for vulnerabilities
-      run: snyk container test weather-webapp:latest ${{ github.sha }} --fail-on=all --threshold=critical
+    - name: Run Snyk to check for vulnerabilities in container
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: weather-webapp:latest ${{ github.sha }}
+        args: --fail-on=all --threshold=critical
       
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.6.0
