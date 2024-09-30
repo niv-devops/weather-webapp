@@ -139,8 +139,8 @@ jobs:
         channel-id: 'C07PEEVQ5JS'
         slack-message: |
           GitHub workflow results:
-          Test job status: ${{ jobs.test.result }}
-          Build job status: ${{ jobs.build.result }}
+          Test job status: ${{ needs.test.result }}
+          Build job status: ${{ needs.build.result }}
           Workflow URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
