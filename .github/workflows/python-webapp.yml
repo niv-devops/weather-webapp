@@ -89,7 +89,7 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        image: weather-webapp
+        image: ${{ github.actor }}/weather-webapp:latest
         args: --threshold=critical
       
     - name: Install Cosign
