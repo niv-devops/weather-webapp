@@ -97,6 +97,8 @@ jobs:
         
     - name: Sign the Image
       run: |
+        cosign generate-key-pair
+        echo "$(cat cosign.key)" | gh secret set COSIGN_KEY --repo ${{ github.repository }} --body -
         echo "${{ secrets.COSIGN_KEY }}" > cosign.key
         cosign sign --key cosign.key weather-webapp:latest
 
