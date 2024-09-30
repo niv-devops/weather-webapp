@@ -1,7 +1,7 @@
 # Weather WebApp
 
 A simple weather web app built with Python, using Flask, Nginx and Gunicorn.
-CI/CD pipeline done GitHub Actions.
+CI/CD pipeline done with GitHub Actions.
 
 ## Table of Contents
 
