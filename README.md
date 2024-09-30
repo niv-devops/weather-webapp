@@ -1,22 +1,110 @@
 # Weather WebApp
 
-Weather WebApp is a Python project using Flask, Nginx and Gunicorn.
-CI/CD pipeline done with Jenkins.
+A simple weather web app built with Python, using Flask, Nginx and Gunicorn.
+CI/CD pipeline done GitHub Actions.
+
+## Table of Contents
+
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Running Tests](#running-tests)
+- [Docker](#docker)
+- [Continuous Integration](#continuous-integration)
+
+## Features
+
+- Check current weather conditions for any location.
+- Built using Flask and Gunicorn for efficient handling of requests.
+- Dockerized for easy deployment.
+- Integrated security checks with Snyk and Gitleaks.
+- Automated tests with pytest and linting with flake8 and pylint.
+
+## Technologies Used
+
+- Python 3.12
+- Flask
+- Gunicorn
+- Docker
+- GitHub Actions for CI/CD
+- Snyk for security scanning
+- Gitleaks for secret detection
+- [API: open-meteo](https://api.open-meteo.com/v1/forecast)
 
 ## Installation
 
-Active env, install dependencies, run application
+To run this project locally, follow these steps:
 
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/niv-devops/weather-webapp.git
+   cd weather-webapp
+   ```
+
+2. Active env, install dependencies, run application
+
+   ```bash
+   cd existing_repo
+   . .venv/bin/activate
+   pip install --break-system-packages --user <dependency>
+   python3 weather.py
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+   
+4. Set up environment variables as needed (e.g., API keys for weather services).
+
+## Usage
+
+To run the application locally, use the following command:
+
+```bash
+gunicorn --bind 0.0.0.0:5000 wsgi:app
 ```
-cd existing_repo
-. .venv/bin/activate
-pip install --break-system-packages --user <dependency>
-python3 weather.py
+
+You can then access the application at `http://localhost:5000`.
+
+## Running Tests
+
+To run the tests, execute:
+
+```bash
+pytest tests/
 ```
 
-## Description
+## Docker
 
-[API: open-meteo](https://api.open-meteo.com/v1/forecast)
+To build and run the application using Docker, follow these steps:
+
+1. Build the Docker image:
+   ```bash
+   docker build -t weather-webapp .
+   ```
+
+2. Run the Docker container:
+   ```bash
+   docker run -p 5000:5000 weather-webapp
+   ```
+
+## Continuous Integration
+
+This project uses GitHub Actions for CI/CD. The pipeline includes:
+
+- Running tests and linting on every push and pull request.
+- Building and pushing Docker images to GitHub Container Registry.
+- Scanning for vulnerabilities using Snyk and Gitleaks.
+
+### Pipeline Steps
+
+1. **Test**: Runs all tests and checks for code quality.
+2. **Build**: Builds the Docker image and pushes it to the GitHub Container Registry.
+3. **Monitor**: Sends notifications to a Slack channel regarding the pipeline status.
 
 ***
 

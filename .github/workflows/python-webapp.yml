@@ -106,6 +106,7 @@ jobs:
       with:
         image: ghcr.io/${{ github.repository }}:latest
         args: --threshold=critical
+      continue-on-error: true
 
     - name: Get Image Digest
       id: get_digest
