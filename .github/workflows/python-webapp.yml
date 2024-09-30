@@ -79,6 +79,13 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GHCR_TOKEN }}
 
     - name: Build Image
       id: build_image
@@ -108,7 +115,8 @@ jobs:
     - name: Get Image Digest
       id: get_digest
       run: |
-        IMAGE_DIGEST=$(buildah inspect --format='{{.Digest}}' ghcr.io/${{ github.repository }}:latest)
+        docker pull ghcr.io/${{ github.repository }}:latest
+        IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/${{ github.repository }}:latest)
         echo "IMAGE_DIGEST=$IMAGE_DIGEST" >> $GITHUB_ENV
     
     - name: Install Cosign
