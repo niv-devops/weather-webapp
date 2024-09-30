@@ -44,6 +44,26 @@ jobs:
       if: github.event_name == 'push'
       run: pylint --fail-under=8 $(git ls-files '*.py')
 
+    - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=critical
+      
+    #- name: Set up Node.js
+     # uses: actions/setup-node@v4.0.4
+      #with:
+      #  node-version: 20
+
+    #- name: Install Snyk CLI
+    #  run: npm install -g snyk
+
+    #- name: Run Snyk to check for vulnerabilities in project
+     # run: |
+       # snyk auth ${{ secrets.SNYK_TOKEN }}
+        #snyk test Dockerfile --severity-threshold=critical
+
     #- name: Test with pytest
     #  run: |
     #    pytest tests/
@@ -55,19 +75,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4.0.4
-      with:
-        node-version: 20
-
-    - name: Install Snyk CLI
-      run: npm install -g snyk
-
-    - name: Run Snyk to check for vulnerabilities in project
-      run: |
-        snyk auth ${{ secrets.SNYK_TOKEN }}
-        snyk iac test Dockerfile --severity-threshold=critical
 
     - name: Build Image
       id: build_image
@@ -83,7 +90,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
         image: weather-webapp:latest ${{ github.sha }}
-        args: --fail-on=all --threshold=critical
+        args: --threshold=critical
       
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.6.0
