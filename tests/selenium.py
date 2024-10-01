@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys
 class weather_webapp_test(unittest.TestCase):
     """ Tests running on weather web app """
     def setUp(self):
-        "" Set up the Selenium WebDriver before each test """
+        """ Set up the Selenium WebDriver before each test """
         opt = webdriver.ChromeOptions()
         opt.add_argument('ignore-certificate-errors')
         self.driver = webdriver.Chrome(options=opt)
