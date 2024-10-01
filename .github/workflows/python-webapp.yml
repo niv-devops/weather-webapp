@@ -43,6 +43,13 @@ jobs:
     - name: Analysing the code with pylint
       if: github.event_name == 'push'
       run: pylint --fail-under=8 $(git ls-files '*.py')
+      
+    - name: SAST with Bandit
+      uses: mdegis/bandit-action@v1.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        level: high
+        exit_zero: true  
 
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions/python@master

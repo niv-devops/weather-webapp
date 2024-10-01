@@ -1,0 +1,12 @@
+# Ignore directories
+/.github
+/.git
+/config
+/tests
+/images
+
+# Ignore files
+*.pub
+.pre-commit-config.yaml
+.gitignore
+Jenkinsfile

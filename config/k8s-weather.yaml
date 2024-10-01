@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: "2024-08-28T13:28:18Z"
+  generation: 1
+  labels:
+    app: weather-app
+  name: weather-app
+  namespace: default
+  resourceVersion: "376"
+  uid: f07ca628-a468-49f7-90dc-b7ef273b3178
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: weather-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: weather-app
+    spec:
+      containers:
+      - image: devopsgoofy/weather-webapp:latest
+        imagePullPolicy: Always
+        name: weather-webapp
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        ports:
+        - containerPort: 5000
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status: {}
