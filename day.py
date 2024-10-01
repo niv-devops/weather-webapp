@@ -19,4 +19,3 @@ class Forecast:
             'eve_temper': self.eve_temper,
             'humidity': self.humidity
         }
-

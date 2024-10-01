@@ -3,15 +3,18 @@ from weather import app, get_location_from_args, fetch_weather_data, process_hou
 
 @pytest.fixture
 def client():
+    """ Create a test client for the Flask application """
     with app.test_client() as client:
         yield client
 
 def test_get_location_from_args():
+    """ Test getting location from command line arguments """
     location = get_location_from_args("Haifa")
     assert location is not None
     assert location.address == "Haifa, Israel"
 
 def test_fetch_weather_data(mocker):
+    """ Test fetching weather data from the weather API """
     mock_response = {
         'latitude': 32.8156,
         'longitude': 34.9885,
@@ -28,6 +31,7 @@ def test_fetch_weather_data(mocker):
     assert response['latitude'] == 32.8156
 
 def test_process_hourly_data():
+    """ Test processing of hourly weather data """
     mock_response = {
         'Hourly': lambda: {
             'Variables': lambda x: {'ValuesAsNumpy': [20, 21, 22]} if x == 0 else
@@ -40,7 +44,7 @@ def test_process_hourly_data():
     assert len(forecasts) == 7
 
 def test_health_check(client):
+    """ Test the health check endpoint """
     response = client.get('/health')
     assert response.data == b'Healthy'
     assert response.status_code == 200
-
