@@ -1,4 +1,4 @@
-name: Python weather webapp
+name: Python weather webapp DevSecOps Workflow
 
 on:
   push:
@@ -141,12 +141,11 @@ jobs:
         channel-id: 'C07PEEVQ5JS'
         slack-message: |
           GitHub workflow results:
-          -----------------------
-          Test job status: ${{ needs.test.result }} - ${{ needs.test.result == 'success' && '✅ Success' || '❌ Failed' }}
-          Build job status: ${{ needs.build.result }} - ${{ needs.build.result == 'success' && '✅ Success' || '❌ Failed' }}
-          -------------------------------------------
-          Details:
-          Workflow Status: ${{ job.status }} - ${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}
+          --------------------------------------------
+          Test job status: ${{ needs.test.result }} ${{ needs.test.result == 'success' && '✅' || '❌' }}
+          Build job status: ${{ needs.build.result }} ${{ needs.build.result == 'success' && '✅' || '❌' }}
+          Monitor job status: ${{ job.status }} ${{ job.status == 'success' && '✅' || '❌' }}
+          --------------------------------------------
           Workflow URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}

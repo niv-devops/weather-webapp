@@ -8,20 +8,21 @@ Install dependency: pip install --break-system-packages --user <dependency>
 """
 
 from datetime import datetime, timedelta
-import json
-import logging
-import os
-from decimal import Decimal
-import boto3
-from flask import Flask, render_template, request, Response, jsonify
+from flask import Flask, render_template, request, abort, Response, jsonify, send_from_directory
 from geopy.geocoders import Nominatim
-from prometheus_client import Counter, generate_latest
-from prometheus_flask_exporter import PrometheusMetrics
 import openmeteo_requests
 import requests_cache
 from retry_requests import retry
-import ecs_logging
 from day import forecast
+import boto3
+from boto3 import client
+import json
+import os
+from decimal import Decimal
+from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import Counter, generate_latest
+import logging
+import ecs_logging
 
 app = Flask(__name__)
 
@@ -32,7 +33,7 @@ openmeteo = openmeteo_requests.Client(session=retry_session)
 metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Application info', version='1.0.3')
 location_request_counter = Counter('location_counter', 'HTTP Location Requests Total', ['location'])
-
+'''
 logging.basicConfig(filename='/var/log/flask/app.log', level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s: %(message)s')
 
@@ -41,7 +42,7 @@ logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler('/var/log/flask/logs.json')
 handler.setFormatter(ecs_logging.StdlibFormatter())
 logger.addHandler(handler)
-
+'''
 def get_location_from_args(location_arg):
     """ Get location from user input """
     geolocator = Nominatim(user_agent="weather.py")
@@ -70,13 +71,13 @@ def process_hourly_data(response):
     hourly_is_day = hourly.Variables(2).ValuesAsNumpy()
 
     forecasts = []
-
+    
     for day in range(7):
         count_is_day = 0
         day_temp_sum = 0
         night_temp_sum = 0
         day_humidity_sum = 0
-
+        
         for hour in range(24):
             index = day * 24 + hour
             temperature = hourly_temperature_2m[index]
@@ -90,11 +91,11 @@ def process_hourly_data(response):
                 night_temp_sum += temperature
 
             day_humidity_sum += humidity
-
+        
         avg_day_temp = day_temp_sum / count_is_day if count_is_day > 0 else -99999
         avg_night_temp = night_temp_sum / (24 - count_is_day) if (24 - count_is_day) > 0 else -99999
         avg_daily_humidity = day_humidity_sum / 24
-
+        
         date_obj = datetime.today().date() + timedelta(days=day)
         forecast_instance = {
             "date": str(date_obj),
@@ -103,7 +104,7 @@ def process_hourly_data(response):
             "avg_daily_humidity": float(avg_daily_humidity)
         }
         forecasts.append(forecast_instance)
-
+    
     return forecasts
 
 def convert_to_decimal(data):
@@ -114,7 +115,25 @@ def convert_to_decimal(data):
         return [convert_to_decimal(i) for i in data]
     elif isinstance(data, float):
         return Decimal(str(data))
-    return data
+    else:
+        return data
+
+def data_history(location, forecasts):
+    """ Save history of search data to a JSON file """
+    date_str = datetime.today().strftime("%d-%m-%Y")
+    filename = f"{location}_{date_str}.json"
+    filepath = os.path.join('data_history', filename)
+    if not os.path.exists('data_history'):
+        os.makedirs('data_history')
+    with open(filepath, 'w') as json_file:
+        json.dump(forecasts, json_file, indent=4)
+
+@app.context_processor
+def env_vars():
+    """ Send environment variables to app routes """
+    return {
+        'BG_COLOR': os.getenv('BG_COLOR', '#121212')
+    }
 
 @app.route('/', methods=['GET'])
 def get_weather():
@@ -137,6 +156,7 @@ def get_weather():
             location_request_counter.labels(location=location_arg).inc()
             response = fetch_weather_data(location)
             forecasts = process_hourly_data(response)
+            data_history(location_arg, forecasts)
 
         except ValueError as e:
             logging.error(f"Error during backup: {e}")
@@ -158,11 +178,11 @@ def static_web():
 def health_check():
     """ Check web connectivity """
     return 'Healthy', 200
-
+    
 @app.route('/download', methods=['GET'])
 def get_image():
     """ Download sky's image from AWS S3 bucket """
-    s3 = boto3.client('s3', aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'), 
+    s3 = client('s3', aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'), 
                       aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
     file = s3.get_object(Bucket='tasty-kfc-bucket', Key='sky.jpg')
     return Response(
@@ -224,6 +244,23 @@ def elkstack_logs():
     app.logger.critical("Program halt!")
     return "logger levels!"
 
+@app.route('/history', methods=['GET'])
+def list_files():
+    """ List all saved history JSON files """
+    files = os.listdir('data_history')
+    location_filter = request.args.get('location')
+    date_filter = request.args.get('date')
+    if location_filter:
+        files = [f for f in files if location_filter in f]
+    if date_filter:
+        files = [f for f in files if date_filter in f]
+    return render_template('history.html', files=files)
+
+@app.route('/download/<filename>', methods=['GET'])
+def download_file(filename):
+    """ Download the specified JSON file """
+    return send_from_directory('data_history', filename, as_attachment=True)
+
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)

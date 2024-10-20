@@ -1,0 +1,53 @@
+name: Publish to Docker Hub
+
+on:
+  workflow_run:
+    workflows: ["Python weather webapp DevSecOps Workflow"]
+    types:
+      - completed
+
+jobs:
+  publish:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: devopsgoofy
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and Publish Docker image
+        uses: docker/build-push-action@V6.7.0
+        with:
+          context: .
+          file: Dockerfile
+          tags: |
+            devopsgoofy/weather-webapp:latest
+            devopsgoofy/weather-webapp:${{ github.sha }}
+          push: true
+          
+  monitor:
+    runs-on: ubuntu-latest
+    needs: publish
+    if: always()
+
+    steps:
+      - name: Post to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: 'C07PEEVQ5JS'
+          slack-message: |
+            GitHub workflow results:
+            --------------------------------------------
+            Publish job status: ${{ needs.publish.result }} ${{ needs.publish.result == 'success' && '✅' || '❌' }}
+            Monitor job status: ${{ job.status }} ${{ job.status == 'success' && '✅' || '❌' }}
+            --------------------------------------------
+            Workflow URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}

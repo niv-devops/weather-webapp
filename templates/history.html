@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>History</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #0e0e0e;
+            color: #e0e0e0;
+            padding: 20px;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            color: #39ff14;
+            text-shadow: 0 0 20px #39ff14, 0 0 30px #39ff14;
+        }
+
+        .container {
+            background-color: #1c1c1c;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.7);
+            border: 1px solid #39ff14;
+        }
+
+        .filter-label {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        .form-control {
+            background-color: #222;
+            border: 1px solid rgba(255, 0, 255, 1);
+            color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            transition: box-shadow 0.3s;
+        }
+
+        .form-control:focus {
+            background-color: #222;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 1);
+            border-color: #ff00ff;
+            color: #ffffff;
+        }
+
+        .btn-custom {
+            background: linear-gradient(90deg, #ff00ff, #39ff14);
+            color: #000000;
+            text-shadow: 0 0 5px #39ff14;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(90deg, #ff66ff, #33cc13);
+            box-shadow: 0 0 10px #ff00ff, 0 0 20px #39ff14;
+        }
+
+        .btn-download, .btn-home {
+            background-color: #39ff14;
+            color: black;
+            border: 1px solid #39ff14;
+            text-shadow: 0 0 5px #ffffff;
+        }
+
+        .btn-download:hover, .btn-home:hover {
+            background-color: #33cc13;
+            box-shadow: 0 0 10px #39ff14;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #39ff14;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1a1a1a;
+            color: #39ff14;
+            text-shadow: 0 0 10px #39ff14;
+        }
+
+        tr:nth-child(even) {
+            background-color: #222;
+        }
+
+        tr:hover {
+            background-color: #333;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">History of Searches</h1>
+        
+        <!-- Filter Form -->
+        <div class="form-group">
+            <label class="filter-label" for="location">Filter by Location:</label>
+            <select class="form-control" id="location" onchange="filterTable()">
+                <option value="">All Locations</option>
+                {% for file in files %}
+                    <option value="{{ file.split('_')[0] }}">{{ file.split('_')[0] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="filter-label" for="date">Filter by Date:</label>
+            <input type="date" class="form-control" id="date" onchange="filterTable()">
+        </div>
+
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Download</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                <tr>
+                    <td>{{ file.split('_')[0] }}</td>
+                    <td>{{ file.split('_')[1].replace('.json', '') }}</td>
+                    <td>
+                        <a href="{{ url_for('download_file', filename=file) }}" class="btn btn-download">Download</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('get_weather') }}" class="btn btn-home">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        function filterTable() {
+            const locationInput = document.getElementById("location").value;
+            const dateInput = document.getElementById("date").value;
+            const table = document.getElementById("historyTable");
+            const rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                const locationCell = rows[i].cells[0].innerText;
+                const dateCell = rows[i].cells[1].innerText;
+
+                const locationMatch = locationInput === "" || locationCell === locationInput;
+                const dateMatch = dateInput === "" || dateCell === dateInput;
+
+                if (locationMatch && dateMatch) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+</body>
+</html>
