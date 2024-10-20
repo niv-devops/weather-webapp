@@ -7,22 +7,22 @@ Run application:   $ flask --app weather run
 Install dependency: pip install --break-system-packages --user <dependency>
 """
 
+import os
+import json
+import logging
+from decimal import Decimal
 from datetime import datetime, timedelta
+import boto3
+from boto3 import client
+import ecs_logging
 from flask import Flask, render_template, request, abort, Response, jsonify, send_from_directory
 from geopy.geocoders import Nominatim
 import openmeteo_requests
 import requests_cache
 from retry_requests import retry
-from day import forecast
-import boto3
-from boto3 import client
-import json
-import os
-from decimal import Decimal
 from prometheus_flask_exporter import PrometheusMetrics
 from prometheus_client import Counter, generate_latest
-import logging
-import ecs_logging
+from day import forecast
 
 app = Flask(__name__)
 
@@ -71,13 +71,13 @@ def process_hourly_data(response):
     hourly_is_day = hourly.Variables(2).ValuesAsNumpy()
 
     forecasts = []
-    
+
     for day in range(7):
         count_is_day = 0
         day_temp_sum = 0
         night_temp_sum = 0
         day_humidity_sum = 0
-        
+
         for hour in range(24):
             index = day * 24 + hour
             temperature = hourly_temperature_2m[index]
@@ -91,11 +91,11 @@ def process_hourly_data(response):
                 night_temp_sum += temperature
 
             day_humidity_sum += humidity
-        
+
         avg_day_temp = day_temp_sum / count_is_day if count_is_day > 0 else -99999
         avg_night_temp = night_temp_sum / (24 - count_is_day) if (24 - count_is_day) > 0 else -99999
         avg_daily_humidity = day_humidity_sum / 24
-        
+
         date_obj = datetime.today().date() + timedelta(days=day)
         forecast_instance = {
             "date": str(date_obj),
@@ -104,7 +104,7 @@ def process_hourly_data(response):
             "avg_daily_humidity": float(avg_daily_humidity)
         }
         forecasts.append(forecast_instance)
-    
+
     return forecasts
 
 def convert_to_decimal(data):
@@ -115,8 +115,7 @@ def convert_to_decimal(data):
         return [convert_to_decimal(i) for i in data]
     elif isinstance(data, float):
         return Decimal(str(data))
-    else:
-        return data
+    return data
 
 def data_history(location, forecasts):
     """ Save history of search data to a JSON file """
@@ -178,11 +177,11 @@ def static_web():
 def health_check():
     """ Check web connectivity """
     return 'Healthy', 200
-    
+
 @app.route('/download', methods=['GET'])
 def get_image():
     """ Download sky's image from AWS S3 bucket """
-    s3 = client('s3', aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'), 
+    s3 = client('s3', aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
                       aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
     file = s3.get_object(Bucket='tasty-kfc-bucket', Key='sky.jpg')
     return Response(
