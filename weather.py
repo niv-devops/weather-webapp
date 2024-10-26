@@ -119,7 +119,7 @@ def convert_to_decimal(data):
 
 def data_history(location, forecasts):
     """ Save history of search data to a JSON file """
-    date_str = datetime.today().strftime("%d-%m-%Y")
+    date_str = datetime.today().strftime("%m-%d-%Y")
     filename = f"{location}_{date_str}.json"
     filepath = os.path.join('data_history', filename)
     if not os.path.exists('data_history'):
