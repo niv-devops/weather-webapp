@@ -31,6 +31,16 @@ jobs:
             devopsgoofy/weather-webapp:latest
             devopsgoofy/weather-webapp:${{ github.sha }}
           push: true
+
+      - name: Update Kubernetes Manifests
+        run: |
+          NEW_VERSION=latest
+          sed -i "s|devopsgoofy/weather-webapp:.*|devopsgoofy/weather-webapp:${NEW_VERSION}|g" manifests/deployment.yaml
+          git config user.name "GitHub Actions"
+          git config user.email "action@github.com"
+          git add manifests/deployment.yaml
+          git commit -m "Update image version to ${NEW_VERSION} [skip ci]"
+          git push origin main
           
   monitor:
     runs-on: ubuntu-latest
