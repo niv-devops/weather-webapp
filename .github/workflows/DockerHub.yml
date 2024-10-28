@@ -6,6 +6,9 @@ on:
     workflows: ["Python weather webapp DevSecOps Workflow"]
     types:
       - completed
+      
+permissions:
+  contents: write
 
 jobs:
   publish:
@@ -40,7 +43,7 @@ jobs:
           git config user.email "action@github.com"
           git add manifests/deployment.yaml
           git commit -m "Update image version to ${NEW_VERSION} [skip ci]"
-          git push origin main
+          git push origin HEAD:refs/heads/main
           
   monitor:
     runs-on: ubuntu-latest
