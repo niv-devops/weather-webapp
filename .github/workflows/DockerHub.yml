@@ -8,8 +8,7 @@ on:
       - completed
       
 permissions:
-  contents: write
-  repository-dispatch: write
+  contents: read & write
 
 jobs:
   publish:
