@@ -47,10 +47,10 @@ jobs:
       - name: Trigger webapp-argocd repo's pipeline
         uses: peter-evans/repository-dispatch@v3
         with:
+          token: ${{ secrets.GH_TOKEN }}
           repository: niv-devops/webapp-argocd
           event-type: update-manifest
           client-payload: '{"sha": "${{ github.sha }}", "tag": "${{ github.ref }}" }'
-          token: ${{ secrets.GH_TOKEN }}
           
   monitor:
     runs-on: ubuntu-latest
