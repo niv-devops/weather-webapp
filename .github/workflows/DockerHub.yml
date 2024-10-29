@@ -8,7 +8,7 @@ on:
       - completed
       
 permissions:
-  contents: read & write
+  contents: read
 
 jobs:
   publish:
