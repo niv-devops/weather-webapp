@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: devopsgoofy/weather-webapp:87b6922e52ec9accb0fb25d699a1c0503177e0ab
+        image: devopsgoofy/weather-webapp:a79a7e43008557e4fb69222f0fbc74904a4ffde9
         ports:
         - containerPort: 5000
