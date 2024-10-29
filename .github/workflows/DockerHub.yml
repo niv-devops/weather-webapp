@@ -50,6 +50,7 @@ jobs:
           repository: niv-devops/webapp-argocd
           event-type: update-manifest
           client-payload: '{"sha": "${{ github.sha }}", "tag": "${{ github.ref }}" }'
+          token: ${{ secrets.GH_TOKEN }}
           
   monitor:
     runs-on: ubuntu-latest
