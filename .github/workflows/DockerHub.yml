@@ -9,6 +9,7 @@ on:
       
 permissions:
   contents: write
+  repository-dispatch: write
 
 jobs:
   publish:
