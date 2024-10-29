@@ -44,14 +44,6 @@ jobs:
           git commit -m "Update image version to ${{ github.sha }} [skip ci]"
           git push origin HEAD:refs/heads/main
           
-      - name: Trigger webapp-argocd repo's pipeline
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          repository: niv-devops/webapp-argocd
-          event-type: update-manifest
-          client-payload: '{"sha": "${{ github.sha }}", "tag": "${{ github.ref }}" }'
-          
   monitor:
     runs-on: ubuntu-latest
     needs: publish
