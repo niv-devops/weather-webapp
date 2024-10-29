@@ -17,3 +17,5 @@ spec:
         image: devopsgoofy/weather-webapp:a79a7e43008557e4fb69222f0fbc74904a4ffde9
         ports:
         - containerPort: 5000
+      imagePullSecrets:
+        - name: regcred
