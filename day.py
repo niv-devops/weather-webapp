@@ -1,5 +1,5 @@
 """ Module for handling weather forecast data """
-class Forecast:
+class forecast:
     """ Represents a weather forecast for a specific date """
     def __init__(self, date, eve_temper=None, mor_temper=None, humidity=None):
         """ Initializes a Forecast object """
