@@ -1,5 +1,10 @@
 # Weather WebApp
 
+<div align="center">
+    <img src="./images/thunderCast.png" alt="DevOps Exercises" width="300">
+</div>
+
+
 A simple weather web app built with Python, using Flask, Nginx and Gunicorn.
 CI/CD pipeline done with GitHub Actions.
 
